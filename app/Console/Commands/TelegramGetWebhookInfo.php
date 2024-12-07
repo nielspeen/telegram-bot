@@ -27,6 +27,15 @@ class TelegramGetWebhookInfo extends Command
     public function handle()
     {
         $result = Telegram::getWebhookInfo();
-        $this->info(json_encode($result, JSON_PRETTY_PRINT));
+
+        if ($result['ok']) {
+            $rows = collect($result['result'])->map(fn ($value, $key) => [
+                str($key)->title(), $value
+            ])->toArray();
+
+            $this->table(['Key', 'Value'], $rows);
+        } else {
+            $this->error('Error getting webhook info: ' . $result['error_code'] . ' - ' . $result['description']);
+        }
     }
 }
