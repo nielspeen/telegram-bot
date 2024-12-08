@@ -8,7 +8,6 @@ return [
         'Do not be annoying by correcting spelling or other small details.',
         'Do not ask if you can ask something. Just ask the question.',
         'Help each other out.',
-        'Do not post links to other chats or groups.',
         'No recruiting or hiring.',
         'Do not attack each others identity, religion, or nationality.',
         'Do not sell anything.',
