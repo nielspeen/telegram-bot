@@ -51,7 +51,7 @@ class Moderator
             return;
         }
 
-        Log::info('Moderating photo:', ['chat_id' => $message->chat->title, 'username' => $message->from->username, 'photo' => $message->photo]);
+        Log::info('Moderating photo:', ['chat_id' => $message->chat->title, 'message_thread_id' => $message->message_thread_id ?? null, 'username' => $message->from->username, 'photo' => $message->photo]);
 
         $filename = Telegram::getFile($message->photo[0]->file_id, $message->photo[0]->file_unique_id);
         Log::info('Photo:', ['filename' => $filename]);
@@ -75,7 +75,7 @@ class Moderator
             return;
         }
 
-        Log::info('Moderating message:', ['chat_id' => $message->chat->title, 'username' => $message->from->username, 'text' => $message->text]);
+        Log::info('Moderating message:', ['chat_id' => $message->chat->title, 'message_thread_id' => $message->message_thread_id ?? null, 'username' => $message->from->username, 'text' => $message->text]);
 
         $prompt = $this->getPrompt($message);
         $responseContent = $this->createOpenAIChat($prompt);
@@ -120,7 +120,7 @@ class Moderator
         Log::info('User restricted:', ['username' => $message->from->username, 'reason' => $reason, 'result' => $result]);
 
         $reason = escape_markdown_v2($reason);
-        Telegram::sendMessage($message->chat->id, "{$message->from->username}, your message was deleted because it violated the following rule: *{$reason}* You're temporarily restricted from sending messages for *{$timeout}* seconds\.");
+        Telegram::sendMessage($message->chat->id, $message->message_thread_id ?? null, "{$message->from->username}, your message was deleted because it violated the following rule: *{$reason}* You're temporarily restricted from sending messages for *{$timeout}* seconds\.");
     }
 
     protected function determineRestrictionTimeout(object $userInfo): int
@@ -169,7 +169,7 @@ class Moderator
 
             Telegram::banChatMember($message->chat->id, $message->from->id, time() + 86400);
 
-            Telegram::sendMessage($message->chat->id, escape_markdown_v2("{$message->from->username} is a bot. Banned."));
+            Telegram::sendMessage($message->chat->id, $message->message_thread_id ?? null, escape_markdown_v2("{$message->from->username} is a bot. Banned."));
 
             return true;
 
@@ -188,7 +188,7 @@ class Moderator
 
             // Delete the message and notify user they're being rate limited
             Telegram::deleteMessage($message->chat->id, $message->message_id);
-            Telegram::sendMessage($message->chat->id, escape_markdown_v2("{$message->from->username}, slow down! Please wait {$seconds} seconds before sending more messages."));
+            Telegram::sendMessage($message->chat->id, $message->message_thread_id ?? null, escape_markdown_v2("{$message->from->username}, slow down! Please wait {$seconds} seconds before sending more messages."));
 
             // Temporarily restrict the user for the duration of the rate limit
             Telegram::restrictChatMember($message->chat->id, $message->from->id, time() + $seconds);

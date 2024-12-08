@@ -14,6 +14,10 @@ class TelegramController extends Controller
 
         Log::info('Telegram webhook request:', (array) $object);
 
+        if (isset($object->message) && property_exists($object->message, 'forum_topic_created')) {
+            return response('', 200);
+        }
+
         if (isset($object->message) && property_exists($object->message, 'photo')) {
             Moderator::moderatePhoto($object->message);
         } elseif (isset($object->message)) {

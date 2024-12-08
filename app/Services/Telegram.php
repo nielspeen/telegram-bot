@@ -68,16 +68,24 @@ class Telegram
     /**
      * Send a message to a chat
      */
-    public function sendMessage(string $chatId, string $text): array
+    public function sendMessage(string $chatId, ?string $messageThreadId, string $text): array
     {
-        $response = Http::post($this->apiUrl . '/sendMessage', [
+        $params = [
             'chat_id' => $chatId,
             'text' => $text,
             'parse_mode' => 'MarkdownV2',
-        ]);
+        ];
+
+        if ($messageThreadId !== null) {
+            $params['message_thread_id'] = $messageThreadId;
+        }
+
+        $response = Http::post($this->apiUrl . '/sendMessage', $params);
 
         if ($response->status() !== 200) {
             Log::error('Failed to send message:', $response->json());
+        } else {
+            Log::info('Message sent:', $params);
         }
 
         return $response->json();
