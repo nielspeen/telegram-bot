@@ -2,6 +2,8 @@
 
 return [
     'rules' => [
+
+        'Links to 12vpx.com and blockthis.xyz are always allowed.',
         'No spam or self promotion.',
         'No "hi" messages without meaningful content.',
         'Be friendly and welcoming.',
