@@ -25,6 +25,7 @@ return new class () extends Migration {
             $table->boolean('can_connect_to_business')->default(false);
             $table->boolean('has_main_web_app')->default(false);
 
+            $table->boolean('is_unmoderated')->default(false);
             $table->integer('violations')->default(0);
             $table->timestamp('last_violation_at')->nullable();
 
